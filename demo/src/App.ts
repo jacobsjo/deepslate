@@ -1,6 +1,6 @@
 import { Structure } from "@webmc/core"
 import { read as readNbt } from '@webmc/nbt'
-import { StructureRenderer } from '@webmc/render';
+import { BlocksRenderer, BoundingBoxBlocksRenderer, Resources, StructureRenderer } from '@webmc/render';
 import { ResourceManager } from './ResourceManager'
 import { mat4 } from 'gl-matrix'
 
@@ -26,12 +26,17 @@ async function main() {
   const resources = new ResourceManager()
   await resources.loadFromZip('./assets.zip')
 
-  const renderer = new StructureRenderer(gl, structure, {
-    blockModels: resources,
+  const resourcesObject : Resources = {
+    blockAtlas: resources.getBlockAtlas(), 
     blockDefinitions: resources,
-    blockAtlas: resources.getBlockAtlas(),
+    blockModels: resources,
     blockProperties: resources
-  })
+  }
+
+  const renderer = new StructureRenderer(gl)
+  renderer.addRenderer(new BlocksRenderer(gl, structure, resourcesObject, 16))
+  renderer.addRenderer(new BoundingBoxBlocksRenderer(gl, structure, resourcesObject))
+  renderer.updateAll()
 
   function resize() {
     const displayWidth = canvas.clientWidth;
@@ -60,8 +65,7 @@ async function main() {
     mat4.rotate(viewMatrix, viewMatrix, yRotation, [0, 1, 0]);
     mat4.translate(viewMatrix, viewMatrix, [-size[0] / 2, -size[1] / 2, -size[2] / 2]);
 
-    renderer.drawGrid(viewMatrix);
-    renderer.drawStructure(viewMatrix);
+    renderer.drawAll(viewMatrix)
   }
   requestAnimationFrame(render);
 
