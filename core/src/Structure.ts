@@ -8,7 +8,8 @@ export class Structure implements StructureProvider {
   constructor(
     private size: BlockPos,
     private palette: BlockState[] = [],
-    private blocks: { pos: BlockPos, state: number, nbt?: BlockNbt }[] = []
+    private blocks: { pos: BlockPos, state: number, nbt?: BlockNbt }[] = [],
+    private entities: { pos: BlockPos, nbt: BlockNbt | undefined}[] = []
   ) {
     blocks.forEach(block => {
       this.blocksMap[block.pos[0] * size[1] * size[2] + block.pos[1] * size[2] + block.pos[2]] = block
@@ -54,6 +55,12 @@ export class Structure implements StructureProvider {
     }
   }
 
+  getAnnotations(): {pos: BlockPos, annotation: string; data: any; }[] {
+    return this.entities.map(entity => {
+      return {pos: [entity.pos[0], entity.pos[1]+0.5, entity.pos[2]], annotation: "entity", data: entity.nbt}
+    })
+  }
+
   public static fromNbt(nbt: NamedNbtTag) {
     const size = getListTag(nbt.value, 'size', 'int', 3) as BlockPos
     const palette = getListTag(nbt.value, 'palette', 'compound')
@@ -65,6 +72,12 @@ export class Structure implements StructureProvider {
         const nbt = getOptional(() => getTag(tags, 'nbt', 'compound'), undefined)
         return { pos, state, nbt }
       })
-    return new Structure(size, palette, blocks)
+    const entities = getOptional(() => getListTag(nbt.value, 'entities', 'compound')
+      .map(tags => {
+        const pos = getListTag(tags, 'pos', 'double', 3) as BlockPos
+        const nbt = undefined;//getTag(tags, 'nbt', 'compound')!
+        return { pos, nbt}
+      }), undefined)
+    return new Structure(size, palette, blocks, entities)
   }
 }

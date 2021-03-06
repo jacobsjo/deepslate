@@ -8,4 +8,5 @@ export interface StructureProvider {
   getSize(): BlockPos
   getBlocks(): { pos: BlockPos; state: BlockState; nbt: BlockNbt | undefined }[]
   getBlock(pos: BlockPos): { pos: BlockPos; state: BlockState; nbt: BlockNbt | undefined } | null
+  getAnnotations(): {pos: BlockPos, annotation: string, data: any}[]
 }
