@@ -46,6 +46,7 @@ export const BlockColors: {
   water: () => water,
   bubble_column: () => water,
   cauldron: () => water,
+  water_cauldron: () => water,
   redstone_wire: (props) => redstone(parseInt(props['power'] ?? '0')),
   sugar_cane: () => grass,
   attached_melon_stem: () => attached_stem,
@@ -53,4 +54,5 @@ export const BlockColors: {
   melon_stem: (props) => stem(parseInt(props['age'] ?? '0')),
   pumpkin_stem: (props) => stem(parseInt(props['age'] ?? '0')),
   lily_pad: () => lily_pad,
+  stonecutter: () => [1, 1, 1]
 }

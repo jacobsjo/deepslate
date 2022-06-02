@@ -64,8 +64,8 @@ export class SelectionOutlineRenderer extends Renderer {
 
   }
 
-  public draw(viewMatrix: mat4) {
-    if (!this.buffers || !this.projMatrix){
+  public draw(viewMatrix: mat4, projMatrix: mat4) {
+    if (!this.buffers){
       throw "Draw called before update"
     }
 
@@ -78,7 +78,7 @@ export class SelectionOutlineRenderer extends Renderer {
     mat4.copy(translatedMatrix, viewMatrix)
     mat4.translate(translatedMatrix, translatedMatrix, this.selection)
     setUniform(this.gl, this.shaderProgram, 'mView', translatedMatrix)
-    setUniform(this.gl, this.shaderProgram, 'mProj', this.projMatrix)
+    setUniform(this.gl, this.shaderProgram, 'mProj', projMatrix)
     this.gl.drawArrays(this.gl.LINES, 0, this.buffers.length)
   }
 }

@@ -25,7 +25,6 @@ export class StructureRenderer {
   }
 
   public addRenderer(renderer: Renderer){
-    renderer.setProjMatrix(this.projMatrix)
     this.renderers.push(renderer)
   }
 
@@ -64,6 +63,7 @@ export class StructureRenderer {
   }
 
   public drawAll(viewMatrix: mat4){
-    this.renderers.forEach(renderer => renderer.draw(viewMatrix))
+    const projMatrix = this.getPerspective()
+    this.renderers.forEach(renderer => renderer.draw(viewMatrix, projMatrix))
   }
 }

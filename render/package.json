@@ -16,7 +16,7 @@
     "url": "https://github.com/misode/webmc.git"
   },
   "dependencies": {
-    "@webmc/core": "^0.2.0",
+    "@webmc/core": "^0.2.1",
     "gl-matrix": "^3.3.0"
   },
   "devDependencies": {

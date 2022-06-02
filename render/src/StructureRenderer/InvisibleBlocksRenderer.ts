@@ -73,8 +73,8 @@ export class InvisibleBlocksRenderer extends Renderer {
   }
 
 
-  public draw(viewMatrix: mat4) {
-    if (!this.buffers || !this.projMatrix){
+  public draw(viewMatrix: mat4, projMatrix: mat4) {
+    if (!this.buffers){
       throw "Draw called before update"
     }
 
@@ -83,7 +83,7 @@ export class InvisibleBlocksRenderer extends Renderer {
     setVertexAttr(this.gl, this.shaderProgram, 'vertPos', 3, this.buffers.position)
     setVertexAttr(this.gl, this.shaderProgram, 'vertColor', 3, this.buffers.color)
     setUniform(this.gl, this.shaderProgram, 'mView', viewMatrix)
-    setUniform(this.gl, this.shaderProgram, 'mProj', this.projMatrix)
+    setUniform(this.gl, this.shaderProgram, 'mProj', projMatrix)
 
     this.gl.drawArrays(this.gl.LINES, 0, this.buffers.length)
   }

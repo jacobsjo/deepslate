@@ -38,6 +38,7 @@ export class AnnotationRenderer extends Renderer {
   private indexBuffer: WebGLBuffer
   private texCoordBuffer: { [key: string]: WebGLBuffer } = {}
   private atlasTexture: WebGLTexture
+  private renderedTypes: string[] | undefined = undefined
 
   constructor(
     gl: WebGLRenderingContext,
@@ -67,16 +68,21 @@ export class AnnotationRenderer extends Renderer {
     return texture
   }
 
+  public setRenderedTypes(types: string[]){
+    this.renderedTypes = types
+  }
+
   public update(chunkPositions?: vec3[]): void {
 
     (new Set(this.structure.getAnnotations().map(a => a.annotation))).forEach(annotation => {
       const uv = this.resources.blockAtlas.getUV("webmc:annotation/" + annotation)
+      const p = this.resources.blockAtlas.part
 
       const texCoords: number[] = []
-      texCoords.push(uv[0], uv[1], 0)
-      texCoords.push(uv[0], uv[1] + 16, 0)
-      texCoords.push(uv[0] + 16, uv[1] + 16, 0)
-      texCoords.push(uv[0] + 16, uv[1], 0)
+      texCoords.push(uv[0], uv[1] + p)
+      texCoords.push(uv[0], uv[1])
+      texCoords.push(uv[0] + p, uv[1])
+      texCoords.push(uv[0] + p, uv[1] + p)
 
       if (this.texCoordBuffer[annotation]) {
         updateBuffer(this.gl, this.texCoordBuffer[annotation], this.gl.ARRAY_BUFFER, new Float32Array(texCoords))
@@ -86,23 +92,21 @@ export class AnnotationRenderer extends Renderer {
     })
   }
 
-  public draw(viewMatrix: mat4): void {
-    if (!this.projMatrix) {
-      throw "ProjMatrix not set"
-    }
-
+  public draw(viewMatrix: mat4, projMatrix: mat4): void {
     this.gl.useProgram(this.shaderProgram)
 
     this.gl.activeTexture(this.gl.TEXTURE0)
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.atlasTexture)
 
-    setUniform(this.gl, this.shaderProgram, 'mProj', this.projMatrix)
+    setUniform(this.gl, this.shaderProgram, 'mProj', projMatrix)
     setVertexAttr(this.gl, this.shaderProgram, 'vertPos', 3, this.positionBuffer)
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer)
 
-    Object.keys(this.texCoordBuffer).forEach(a => {
+    const types = this.renderedTypes ?? Object.keys(this.texCoordBuffer)
+
+    types.forEach(a => {
       setVertexAttr(this.gl, this.shaderProgram, 'texCoord', 2, this.texCoordBuffer[a])
-      this.structure.getAnnotations().filter(annotation => annotation.annotation = a).forEach(annotation => {
+      this.structure.getAnnotations().filter(annotation => annotation.annotation === a).forEach(annotation => {
         const translatedMatrix = mat4.create()
         mat4.copy(translatedMatrix, viewMatrix)
         mat4.translate(translatedMatrix, translatedMatrix, annotation.pos)

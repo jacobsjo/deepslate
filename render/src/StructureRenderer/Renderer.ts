@@ -5,7 +5,6 @@ import { Resources } from "../StructureRenderer";
 
 export abstract class Renderer{
     protected shaderProgram: WebGLProgram
-    protected projMatrix: mat4 | undefined
 
     constructor(
         protected gl: WebGLRenderingContext,
@@ -17,14 +16,10 @@ export abstract class Renderer{
         this.shaderProgram = new ShaderProgram(this.gl, vs, fs).getProgram()
     }
 
-    public setProjMatrix(projMatrix: mat4){
-        this.projMatrix = projMatrix
-    }
-
     public setStructure(structure: StructureProvider) {
         this.structure = structure
     }
         
     public abstract update(chunkPositions?: vec3[]): void
-    public abstract draw(viewMatrix: mat4,): void
+    public abstract draw(viewMatrix: mat4, projMatrix: mat4): void
 }

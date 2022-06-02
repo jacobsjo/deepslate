@@ -106,13 +106,17 @@ export class BlockModel {
 
     const addFace = (face: BlockModelFace, uv: number[], pos: number[]) => {
       const [u0, v0] = uvProvider.getUV(this.getTexture(face.texture))
-      ;(face.uv ?? uv).forEach((e, i) => uv[i] = p * e)
+      ;(face.uv ?? uv).forEach((e, i) => {
+        uv[i] = p * e
+      })
       const r = faceRotations[face.rotation ?? 0]
-      texCoords.push(
-        u0 + uv[r[0]], v0 + uv[r[1]],
+
+      const tc = [u0 + uv[r[0]], v0 + uv[r[1]],
         u0 + uv[r[2]], v0 + uv[r[3]],
         u0 + uv[r[4]], v0 + uv[r[5]],
-        u0 + uv[r[6]], v0 + uv[r[7]])
+        u0 + uv[r[6]], v0 + uv[r[7]]]
+      texCoords.push(...tc)
+
       const tint = (face.tintindex ?? -1) >= 0 ? BlockColors[name.slice(10)]?.(props) : [1, 1, 1]
       tintColors.push(...tint, ...tint, ...tint, ...tint)
       positions.push(...pos)

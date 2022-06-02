@@ -213,18 +213,14 @@ export class BlocksRenderer extends Renderer {
     }
   }  
 
-  public draw(viewMatrix: mat4) {
-    if (!this.projMatrix){
-      throw "ProjMatrix not set"
-    }
-
+  public draw(viewMatrix: mat4, projMatrix: mat4) {
     this.gl.useProgram(this.shaderProgram)
 
     this.gl.activeTexture(this.gl.TEXTURE0)
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.atlasTexture)
 
     setUniform(this.gl, this.shaderProgram, 'mView', viewMatrix)
-    setUniform(this.gl, this.shaderProgram, 'mProj', this.projMatrix)
+    setUniform(this.gl, this.shaderProgram, 'mProj', projMatrix)
 
     this.chunks.forEach(x => {
       x.forEach(y => {
