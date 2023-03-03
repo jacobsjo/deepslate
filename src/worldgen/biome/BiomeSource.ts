@@ -8,6 +8,7 @@ import { TheEndBiomeSource } from './TheEndBiomeSource.js'
 
 export interface BiomeSource {
 	getBiome(x: number, y: number, z: number, climateSampler: Climate.Sampler): Identifier
+	getBiome(x: number, y: number, z: number, climate: Climate.TargetPoint): Identifier
 }
 
 export namespace BiomeSource {

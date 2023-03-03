@@ -1,7 +1,7 @@
 import { Identifier } from '../../core/index.js'
 import { DensityFunction } from '../DensityFunction.js'
 import type { BiomeSource } from './BiomeSource.js'
-import type { Climate } from './Climate.js'
+import { Climate } from './Climate.js'
 
 export class TheEndBiomeSource implements BiomeSource {
 	private static readonly END = Identifier.create('the_end')
@@ -10,7 +10,7 @@ export class TheEndBiomeSource implements BiomeSource {
 	private static readonly ISLANDS = Identifier.create('small_end_islands')
 	private static readonly BARRENS = Identifier.create('end_barrens')
 
-	public getBiome(x: number, y: number, z: number, climateSampler: Climate.Sampler) {
+	public getBiome(x: number, y: number, z: number, climate: Climate.Sampler | Climate.TargetPoint) {
 		const blockX = x << 2
 		const blockY = y << 2
 		const blockZ = z << 2
@@ -23,7 +23,7 @@ export class TheEndBiomeSource implements BiomeSource {
 		}
 
 		const context = DensityFunction.context((sectionX * 2 + 1) * 8, blockY, (sectionZ * 2 + 1) * 8)
-		const erosion = climateSampler.erosion.compute(context)
+		const erosion = (climate instanceof Climate.Sampler) ? climate.erosion.compute(context) : climate.erosion
 		if (erosion > 0.25) {
 			return TheEndBiomeSource.HIGHLANDS
 		} else if (erosion >= -0.0625) {

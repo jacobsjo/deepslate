@@ -10,9 +10,12 @@ export class MultiNoiseBiomeSource implements BiomeSource {
 		this.parameters = new Climate.Parameters(entries)
 	}
 
-	public getBiome(x: number, y: number, z: number, climateSampler: Climate.Sampler) {
-		const target = climateSampler.sample(x, y, z)
-		return this.parameters.find(target)
+	public getBiome(x: number, y: number, z: number, climate: Climate.Sampler | Climate.TargetPoint) {
+		const target = (climate instanceof Climate.Sampler)
+			? climate.sample(x, y, z)
+			: climate
+			
+		return this.parameters.find(target) ?? Identifier.create('void')
 	}
 
 	public static fromJson(obj: unknown) {
