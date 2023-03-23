@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "gl-matrix": "^3.3.0",
+    "js-priority-queue": "^0.1.5",
     "md5": "^2.3.0",
     "pako": "^2.0.3"
   },
