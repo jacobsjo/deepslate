@@ -1,3 +1,4 @@
+import PriorityQueue from 'js-priority-queue'
 import { square } from '../../math/index.js'
 import { Json } from '../../util/index.js'
 import { DensityFunction } from '../DensityFunction.js'
@@ -115,8 +116,8 @@ export namespace Climate {
 			this.index = new RTree(things)
 		}
 
-		public find(target: TargetPoint) {
-			return this.index.search(target, (node, values) => node.distance(values))
+		public find(target: TargetPoint, usePriorityQueue: boolean = false) {
+			return this.index.search(target, (node, values) => node.distance(values), usePriorityQueue)
 		}
 	}
 
@@ -227,9 +228,27 @@ export namespace Climate {
 			return f
 		}
 
-		public search(target: TargetPoint, distance: DistanceMetric<T>) {
-			const leaf = this.root.search(target.toArray(), distance)
-			return leaf.thing()
+		public search(target: TargetPoint, distance: DistanceMetric<T>, usePriorityQueue: boolean = false) {
+			if (!usePriorityQueue){
+				const leaf = this.root.search(target.toArray(), distance)
+				return leaf.thing()
+			} else {
+				const targetValues = target.toArray()
+
+				const queue = new PriorityQueue<{node: RNode<T>, distance: number}>({comparator: (a, b) => a.distance - b.distance})
+				queue.queue({node: this.root, distance: distance(this.root, targetValues)})
+
+				while (queue.length > 0){
+					const node = queue.dequeue().node
+					if (node instanceof RSubTree<T>){
+						node.children.forEach(child => queue.queue({node: child, distance: distance(child, targetValues)}))
+					} else if (node instanceof RLeaf<T>){
+						return node.thing()
+					}
+				}
+
+				return undefined!			
+			}
 		}
 	}
 
