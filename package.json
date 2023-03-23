@@ -65,6 +65,7 @@
     "pako": "^2.0.3"
   },
   "devDependencies": {
+    "@types/js-priority-queue": "^0.0.6",
     "@types/md5": "^2.3.1",
     "@types/pako": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
